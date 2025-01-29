@@ -1,0 +1,19 @@
+{
+  "name": "controle-de-canhotos",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mauricio ferreira",
+  "license": "ISC",
+  "description": "app canhotos",
+  "dependencies": {
+    "@capacitor/cli": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
+    "firebase": "^11.2.0"
+  },
+  "keywords": [
+    "Canhotos"
+  ]
+}

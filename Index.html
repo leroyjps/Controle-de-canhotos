@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Canhotos</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js"></script>
+  </head>
+  <body>
+    <!-- Tela de Login -->
+    <div class="screen" id="loginScreen">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="E-mail" required />
+        <input type="password" id="password" placeholder="Senha" required />
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <!-- Tela de Menu -->
+    <div class="screen" id="menuScreen" style="display: none">
+      <h2>Menu Principal</h2>
+      <button onclick="showScreen('addReceiptScreen')">
+        Adicionar Canhoto
+      </button>
+      <button onclick="loadHistory(); showScreen('historyScreen')">
+        Histórico
+      </button>
+      <button onclick="logout()">Sair</button>
+    </div>
+
+    <!-- Tela de Adicionar Canhoto -->
+    <div class="screen" id="addReceiptScreen" style="display: none">
+      <h2>Adicionar Canhoto</h2>
+      <form id="receiptForm">
+        <input
+          type="text"
+          id="invoiceNumber"
+          placeholder="Nota Fiscal"
+          required
+        />
+        <input type="text" id="cnpj" placeholder="CNPJ" required />
+        <input type="text" id="recipient" placeholder="Destinatário" required />
+        <input
+          type="text"
+          id="truckPlate"
+          placeholder="Placa do Caminhão"
+          required
+        />
+        <select id="shipmentSelect" required>
+          <option value="" disabled selected>
+            Selecione o Tipo de Embarque
+          </option>
+          <option value="normal">Normal</option>
+          <option value="urgente">Urgente</option>
+        </select>
+        <button type="submit">Salvar</button>
+      </form>
+      <button onclick="showScreen('menuScreen')">Voltar</button>
+    </div>
+
+    <!-- Tela de Histórico -->
+    <div class="screen" id="historyScreen" style="display: none">
+      <h2>Histórico de Canhotos</h2>
+      <div id="receiptsList"></div>
+      <button onclick="showScreen('menuScreen')">Voltar</button>
+    </div>
+
+    <!-- Tela de Visualizar Canhoto -->
+    <div class="screen" id="viewerScreen" style="display: none">
+      <h2>Detalhes do Canhoto</h2>
+      <div id="receiptDetails"></div>
+      <button onclick="showScreen('historyScreen')">Voltar</button>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
