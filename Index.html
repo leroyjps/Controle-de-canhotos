@@ -18,6 +18,32 @@
         <input type="password" id="password" placeholder="Senha" required />
         <button type="submit">Entrar</button>
       </form>
+      <p>
+        Não tem uma conta?
+        <a href="#" onclick="showScreen('registerScreen')">Registre-se</a>
+      </p>
+    </div>
+
+    <!-- Tela de Registro -->
+    <div class="screen" id="registerScreen" style="display: none">
+      <h2>Registrar</h2>
+      <form id="registerForm">
+        <input type="email" id="registerEmail" placeholder="E-mail" required />
+        <input
+          type="password"
+          id="registerPassword"
+          placeholder="Senha"
+          required
+        />
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirmar Senha"
+          required
+        />
+        <button type="submit">Registrar</button>
+      </form>
+      <button onclick="showScreen('loginScreen')">Voltar</button>
     </div>
 
     <!-- Tela de Menu -->
@@ -76,6 +102,138 @@
       <button onclick="showScreen('historyScreen')">Voltar</button>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+      // Configuração do Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyC-bTz0DZbGVcCPgnn4AL-9AM19xICmkxE",
+        authDomain: "controle-de-canhotos.firebaseapp.com",
+        projectId: "controle-de-canhotos",
+        storageBucket: "controle-de-canhotos.appspot.com",
+        messagingSenderId: "991920807018",
+        appId: "1:991920807018:web:30bf7cd8fcfad3b4603e13",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      // Mostrar tela específica
+      function showScreen(screenId) {
+        document.querySelectorAll(".screen").forEach((screen) => {
+          screen.style.display = "none";
+        });
+        document.getElementById(screenId).style.display = "block";
+      }
+
+      // Registro de usuário
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const email = document.getElementById("registerEmail").value;
+          const password = document.getElementById("registerPassword").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+          if (password !== confirmPassword) {
+            alert("As senhas não coincidem.");
+            return;
+          }
+
+          auth
+            .createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              const user = userCredential.user;
+              return db.collection("users").doc(user.uid).set({
+                email: email,
+                createdAt: new Date(),
+              });
+            })
+            .then(() => {
+              alert("Usuário registrado com sucesso!");
+              showScreen("loginScreen");
+            })
+            .catch((error) => {
+              alert("Erro no registro: " + error.message);
+            });
+        });
+
+      // Login de usuário
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then(() => {
+              alert("Login realizado com sucesso!");
+              showScreen("menuScreen");
+            })
+            .catch((error) => {
+              alert("Erro no login: " + error.message);
+            });
+        });
+
+      // Salvar canhoto no Firestore
+      document
+        .getElementById("receiptForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const invoiceNumber = document.getElementById("invoiceNumber").value;
+          const cnpj = document.getElementById("cnpj").value;
+          const recipient = document.getElementById("recipient").value;
+          const truckPlate = document.getElementById("truckPlate").value;
+          const shipmentType = document.getElementById("shipmentSelect").value;
+
+          db.collection("receipts")
+            .add({
+              invoiceNumber,
+              cnpj,
+              recipient,
+              truckPlate,
+              shipmentType,
+              createdAt: new Date(),
+            })
+            .then(() => {
+              alert("Canhoto salvo com sucesso!");
+              showScreen("menuScreen");
+            })
+            .catch((error) => {
+              alert("Erro ao salvar canhoto: " + error.message);
+            });
+        });
+
+      // Carregar histórico de canhotos
+      function loadHistory() {
+        const receiptsList = document.getElementById("receiptsList");
+        receiptsList.innerHTML = "";
+
+        db.collection("receipts")
+          .orderBy("createdAt", "desc")
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const receiptItem = document.createElement("div");
+              receiptItem.textContent = `Nota: ${data.invoiceNumber} - Destinatário: ${data.recipient}`;
+              receiptsList.appendChild(receiptItem);
+            });
+          })
+          .catch((error) => {
+            alert("Erro ao carregar histórico: " + error.message);
+          });
+      }
+
+      // Logout
+      function logout() {
+        auth.signOut().then(() => {
+          alert("Você saiu do sistema.");
+          showScreen("loginScreen");
+        });
+      }
+    </script>
   </body>
 </html>

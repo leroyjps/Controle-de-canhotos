@@ -16,9 +16,3 @@ import {
   query,
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
